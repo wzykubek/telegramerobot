@@ -7,15 +7,17 @@ from time import sleep
 TOKEN = environ.get("TOKEN")
 CHANNEL_ID = "@wowneromemes"
 
-while True:
-    memes = json.loads(requests.get("https://suchwow.xyz/api/list").text)
 
-    for meme in memes[::-1]:
+def get_memes():
+    return json.loads(requests.get("https://suchwow.xyz/api/list").text)
+
+
+while True:
+    for meme in get_memes()[::-1]:
         with open("db.json", "r") as f:
             db = json.loads(f.read())
 
         if meme["id"] in db:
-            print("skip")
             continue
         else:
             date = datetime.strptime(meme["timestamp"], "%a, %d %b %Y %H:%M:%S %Z").strftime("%Y-%m-%d, %H:%M:%S GMT")
@@ -44,5 +46,5 @@ while True:
             with open("db.json", "w") as f:
                 f.write(json.dumps(db))
 
-            sleep(3)
+    sleep(3)
 
